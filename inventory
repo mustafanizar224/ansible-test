@@ -1,5 +1,13 @@
+[ubuntu_nodes]
 192.168.50.123
 192.168.50.124
-192.168.50.123 ansible_user=mustafa
-192.168.50.124 ansible_user=mustafa2
+
+[alpine_nodes]
+192.168.50.125
+
+[ubuntu_nodes:vars]
+ansible_user=mustafa
+
+[alpine_nodes:vars]
+ansible_user=alpine
 

@@ -1,18 +1,55 @@
 ---
-
-- hosts: all
+# --- UBUNTU NODES ---
+- hosts: ubuntu_nodes
   become: true
   tasks:
+    - name: Update apt repo index
+      apt:
+        update_cache: yes
 
-  - name: update repo index
-    apt:
-      update_cache: yes
+    - name: Install apache2 package on Ubuntu
+      apt:
+        name:
+          - apache2
+          - libapache2-mod-php
+        state: latest
 
-  - name: install apache2 package
-    apt:
-      name: apache2
-      state: latest
-  - name: add php support for apache
-    apt:
-      name: libapache2-mod-php
-      state: latest
+    - name: Start and enable Apache service on Ubuntu
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Deploy test PHP page on Ubuntu
+      ansible.builtin.copy:
+        content: "<?php phpinfo(); ?>"
+        dest: /var/www/html/index.php
+
+# --- ALPINE NODES ---
+- hosts: alpine_nodes
+  become: true
+  become_method: community.general.doas
+
+  tasks:
+    - name: Update apk repo index
+      community.general.apk:
+        update_cache: yes
+
+    - name: Install apache2 and php package on Alpine
+      community.general.apk:
+        name:
+          - apache2
+          - php85-apache2
+        state: latest
+
+    - name: Start and enable Apache service on Alpine
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Deploy test PHP page on Alpine
+      ansible.builtin.copy:
+        content: "<?php phpinfo(); ?>"
+        dest: /var/www/localhost/htdocs/index.php
+
